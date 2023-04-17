@@ -1,15 +1,19 @@
 package com.example.lippupeliv2
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
+
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,8 +30,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var countDownTimer: CountDownTimer
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        //Creates intent to FinishScreen when onFinish() is called
+        val intent = Intent(this, FinishScreen::class.java)
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.cardslayout)
+
+        //Gets profilename from MainPageActivity tab
+        val profileName = intent.getStringExtra("username")
 
         correctAnswersTextView = findViewById(R.id.correct_answers_text_view)
         flagImageView = findViewById(R.id.flag_image_view)
@@ -37,17 +48,32 @@ class MainActivity : AppCompatActivity() {
         answerCard4 = findViewById(R.id.answer_card_4)
 
         timerTextView = findViewById(R.id.timer_text_view)
+        Log.i(profileName, "profilename")
 
-        countDownTimer = object : CountDownTimer(60000, 1000) { // 1 minute duration, 1 second interval
+        countDownTimer = object : CountDownTimer(30000, 1000) { // 1 minute duration, 1 second interval
             override fun onTick(millisUntilFinished: Long) {
                 val remainingSeconds = millisUntilFinished / 1000
                 timerTextView.text = "Time left: $remainingSeconds seconds"
             }
 
             override fun onFinish() {
+                //Disables answers when game finished
+                answerCard1.isClickable = false;
+                answerCard2.isClickable = false;
+                answerCard3.isClickable = false;
+                answerCard4.isClickable = false;
+
+                //below not necessary anymore -> finishscreen
                 timerTextView.text = "Time's up!"
+
+                //send to finishscreen with score var
+                intent.putExtra("score", correctAnswers)
+                startActivity(intent)
             }
+
         }
+
+
         countDownTimer.start()
 
         allFlagImageIds = mutableListOf<Int>().apply {
@@ -87,6 +113,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupNewGame() {
+
         // Shuffle the list of all flag image resource IDs in the /res/drawable folder
         allFlagImageIds.shuffle()
 
@@ -123,9 +150,23 @@ class MainActivity : AppCompatActivity() {
         placeholderImage2.visibility = View.VISIBLE
         placeholderImage3.visibility = View.VISIBLE
         placeholderImage4.visibility = View.VISIBLE
+
+        //disable answercards spamming
+        answerCard1.isClickable = true;
+        answerCard2.isClickable = true;
+        answerCard3.isClickable = true;
+        answerCard4.isClickable = true;
+
     }
 
     private fun handleAnswerClick(selectedCard: CardView) {
+
+        //disable answercards spamming
+        answerCard1.isClickable = false;
+        answerCard2.isClickable = false;
+        answerCard3.isClickable = false;
+        answerCard4.isClickable = false;
+
         // Set the background image of each option to the random flag image that was previously set
         /*answerCard1.setBackgroundResource(allFlagImageIds[0])
         answerCard2.setBackgroundResource(allFlagImageIds[1])
@@ -146,11 +187,14 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show()
             correctAnswers++
             correctAnswersTextView.text = correctAnswers.toString()
+
         } else {
             Toast.makeText(this, "Wrong!", Toast.LENGTH_SHORT).show()
+
         }
         Handler(Looper.getMainLooper()).postDelayed({
             setupNewGame()
-        }, 3000)
+        }, 1500)
+
     }
 }

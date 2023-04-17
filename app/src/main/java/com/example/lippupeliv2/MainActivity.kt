@@ -2,6 +2,7 @@ package com.example.lippupeliv2
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
@@ -20,11 +21,47 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.cardslayout)
 
+        val placeholderImage1 = findViewById<ImageView>(R.id.placeholder1)
+        val placeholderImage2 = findViewById<ImageView>(R.id.placeholder2)
+        val placeholderImage3 = findViewById<ImageView>(R.id.placeholder3)
+        val placeholderImage4 = findViewById<ImageView>(R.id.placeholder4)
         flagImageView = findViewById(R.id.flag_image_view)
         answerCard1 = findViewById(R.id.answer_card_1)
         answerCard2 = findViewById(R.id.answer_card_2)
         answerCard3 = findViewById(R.id.answer_card_3)
         answerCard4 = findViewById(R.id.answer_card_4)
+        placeholderImage1.setOnClickListener {
+            // Hide placeholder image and show flags
+            placeholderImage1.visibility = View.GONE
+            answerCard1.visibility = View.VISIBLE
+            answerCard2.visibility = View.VISIBLE
+            answerCard3.visibility = View.VISIBLE
+            answerCard4.visibility = View.VISIBLE
+        }
+        placeholderImage2.setOnClickListener {
+            // Hide placeholder image and show flags
+            placeholderImage2.visibility = View.GONE
+            answerCard1.visibility = View.VISIBLE
+            answerCard2.visibility = View.VISIBLE
+            answerCard3.visibility = View.VISIBLE
+            answerCard4.visibility = View.VISIBLE
+        }
+        placeholderImage3.setOnClickListener {
+            // Hide placeholder image and show flags
+            placeholderImage3.visibility = View.GONE
+            answerCard1.visibility = View.VISIBLE
+            answerCard2.visibility = View.VISIBLE
+            answerCard3.visibility = View.VISIBLE
+            answerCard4.visibility = View.VISIBLE
+        }
+        placeholderImage4.setOnClickListener {
+            // Hide placeholder image and show flags
+            placeholderImage4.visibility = View.GONE
+            answerCard1.visibility = View.VISIBLE
+            answerCard2.visibility = View.VISIBLE
+            answerCard3.visibility = View.VISIBLE
+            answerCard4.visibility = View.VISIBLE
+        }
 
         allFlagImageIds = mutableListOf<Int>().apply {
             addAll(
@@ -85,6 +122,15 @@ class MainActivity : AppCompatActivity() {
         // Set one of the answer options to match the top flag image
         val correctAnswerCard = listOf(answerCard1, answerCard2, answerCard3, answerCard4).random()
         correctAnswerCard.setBackgroundResource(topFlagImageId)
+        val placeholderImage1 = findViewById<ImageView>(R.id.placeholder1)
+        val placeholderImage2 = findViewById<ImageView>(R.id.placeholder2)
+        val placeholderImage3 = findViewById<ImageView>(R.id.placeholder3)
+        val placeholderImage4 = findViewById<ImageView>(R.id.placeholder4)
+            // Hide placeholder image and show flags
+            placeholderImage1.visibility = View.VISIBLE
+            placeholderImage2.visibility = View.VISIBLE
+        placeholderImage3.visibility = View.VISIBLE
+        placeholderImage4.visibility = View.VISIBLE
     }
 
     private fun handleAnswerClick(selectedCard: CardView) {

@@ -1,6 +1,8 @@
 package com.example.lippupeliv2
 
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -28,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     private var correctAnswers: Int = 0
     private lateinit var timerTextView: TextView
     private lateinit var countDownTimer: CountDownTimer
+    private var endTime: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -36,6 +39,12 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.cardslayout)
+
+        // Restore timer remaining time from SharedPreferences
+        val prefs = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+        val remainingTime = prefs.getLong("timerRemainingTime", 0)
+        // Calculate the end time of the timer
+        endTime = System.currentTimeMillis() + remainingTime
 
         //Gets profilename from MainPageActivity tab
         val profileName = intent.getStringExtra("username")
@@ -196,5 +205,61 @@ class MainActivity : AppCompatActivity() {
             setupNewGame()
         }, 1500)
 
+    }
+    override fun onPause() {
+        super.onPause()
+
+        val prefs = getSharedPreferences("myPrefs", MODE_PRIVATE)
+        val editor = prefs.edit()
+        editor.putString("topFlagCard", topFlagImageId.toString())
+        editor.putString("answerCard1", answerCard1.tag.toString())
+        editor.putString("answerCard2", answerCard2.tag.toString())
+        editor.putString("answerCard3", answerCard3.tag.toString())
+        editor.putString("answerCard4", answerCard4.tag.toString())
+        editor.putInt("correctAnswers", correctAnswers)
+        if (countDownTimer != null) {
+            countDownTimer.cancel()
+            val remainingTime =  - System.currentTimeMillis()
+            editor.putLong("timerRemainingTime", remainingTime)
+            editor.apply()
+        }
+    }
+    override fun onResume() {
+        super.onResume()
+
+        // Retrieve timer remaining time from SharedPreferences and resume timer
+        val prefs = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+        val remainingTime = prefs.getLong("timerRemainingTime", 0)
+
+        // Calculate the end time of the timer
+        endTime = System.currentTimeMillis() + remainingTime
+
+        // Start the timer with the remaining time
+        if (remainingTime > 0) {
+            countDownTimer = object : CountDownTimer(remainingTime, 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    // Update the UI with the remaining time
+                    val remainingTime = millisUntilFinished / 1000
+                    timerTextView.text = "Time left: $remainingTime seconds"
+                }
+
+                override fun onFinish() {
+                    // Handle timer finish event
+                    answerCard1.isClickable = false;
+                    answerCard2.isClickable = false;
+                    answerCard3.isClickable = false;
+                    answerCard4.isClickable = false;
+
+                    //below not necessary anymore -> finishscreen
+                    timerTextView.text = "Time's up!"
+
+                    //send to finishscreen with score var
+                    intent.putExtra("score", correctAnswers)
+                    startActivity(intent)
+                }
+            }
+
+        }
+        countDownTimer.start()
     }
 }

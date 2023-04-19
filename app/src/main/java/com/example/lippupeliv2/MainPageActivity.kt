@@ -20,10 +20,17 @@ class MainPageActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main_page)
 
         val btnSubmit = findViewById<Button>(R.id.button_submit)
+        val btnFlags = findViewById<Button>(R.id.button_flags)
         val textInput = findViewById<EditText>(R.id.editTextTextPersonName)
 
+        btnFlags.setOnClickListener {
+            val intent2 = Intent(this, flagsActivity::class.java)
+            startActivity(intent2)
+
+}
 
         btnSubmit.setOnClickListener {
+
             val username = textInput.text.toString();
 
             //create intent to MainActivity screen
@@ -39,7 +46,7 @@ class MainPageActivity : AppCompatActivity() {
     }
     override fun onResume() {
         super.onResume()
-        val prefs = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+    /*    val prefs = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
         val topFlagCard = prefs.getString("topFlagCard", null)
         if (topFlagCard != null) {
             val imageView = findViewById<ImageView>(R.id.flag_image_view)
@@ -64,6 +71,6 @@ class MainPageActivity : AppCompatActivity() {
         if (answerCard4Path != null) {
             val imageView = findViewById<ImageView>(R.id.answer_card_4)
             imageView.setImageURI(Uri.parse(answerCard4Path))
-        }
+        }*/
     }
 }

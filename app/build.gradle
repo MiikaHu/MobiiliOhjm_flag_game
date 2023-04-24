@@ -43,6 +43,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     // for adding recyclerview
     implementation 'androidx.recyclerview:recyclerview:1.2.0'
+    //adding SQLite.
+    implementation 'androidx.sqlite:sqlite:2.2.0'
 
     // for adding cardview
     implementation 'androidx.cardview:cardview:1.0.0'

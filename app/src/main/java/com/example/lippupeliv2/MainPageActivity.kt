@@ -39,6 +39,7 @@ class MainPageActivity : AppCompatActivity() {
             //send username to MainActivity screen
             intent.putExtra("username", username)
 
+
             //sends to MainActivity
             startActivity(intent)
         }

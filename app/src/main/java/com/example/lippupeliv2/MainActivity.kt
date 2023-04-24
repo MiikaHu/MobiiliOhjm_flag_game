@@ -1,9 +1,8 @@
 package com.example.lippupeliv2
 
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
@@ -13,8 +12,9 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-
+import com.google.android.material.color.utilities.Score.score
 
 
 class MainActivity : AppCompatActivity() {
@@ -31,14 +31,67 @@ class MainActivity : AppCompatActivity() {
     private lateinit var timerTextView: TextView
     private lateinit var countDownTimer: CountDownTimer
     private var endTime: Long = 0
+    private lateinit var context: Context
+    private lateinit var dbHelper: MyDatabaseHelper
+
+    private fun getHighestScoreForUser(dbHelper: MyDatabaseHelper): Int {
+        // Open a readable database
+     //   val db = dbHelper.readableDatabase
+
+        // Query the database for the highest score for the given user
+     //   val cursor = db.rawQuery(
+     //       "SELECT MAX(score) FROM scores WHERE name = ?",
+     //       arrayOf(profileName)
+     //   )
+
+        // Get the highest score from the cursor
+      //  var highestScore = 0
+      //  if (cursor.moveToFirst()) {
+      //      highestScore = cursor.getInt(0)
+      //  }
+
+        // Close the cursor and database
+      //  cursor.close()
+      //  db.close()
+
+      //  return highestScore
+        // Open a readable database
+        val db = dbHelper.readableDatabase
+
+        // Query the database for the highest score for any user
+        // Query the database for the highest score, ordered by score
+        val cursor = db.rawQuery(
+            "SELECT score FROM scores ORDER BY score DESC LIMIT 1",
+            null
+        )
+        print(cursor)
+
+        // Get the highest score from the cursor
+        var highestScore = 0
+        if (cursor.moveToFirst()) {
+            highestScore = cursor.getInt(0)
+        }
+
+        // Close the cursor and database
+        cursor.close()
+        db.close()
+
+        return highestScore
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        //Creates intent to FinishScreen when onFinish() is called
-        val intent = Intent(this, FinishScreen::class.java)
+
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.cardslayout)
+
+        // initialize the context variable
+        context = this
+
+        // initialize the dbHelper variable with the context
+        dbHelper = MyDatabaseHelper(context)
 
         // Restore timer remaining time from SharedPreferences
         val prefs = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
@@ -48,6 +101,8 @@ class MainActivity : AppCompatActivity() {
 
         //Gets profilename from MainPageActivity tab
         val profileName = intent.getStringExtra("username")
+        //Creates intent to FinishScreen when onFinish() is called
+        val intent = Intent(this, FinishScreen::class.java)
 
         correctAnswersTextView = findViewById(R.id.correct_answers_text_view)
         flagImageView = findViewById(R.id.flag_image_view)
@@ -72,15 +127,44 @@ class MainActivity : AppCompatActivity() {
                 answerCard3.isClickable = false;
                 answerCard4.isClickable = false;
 
+                // Create a new instance of the MyDatabaseHelper class
+
+                val dbHelper = MyDatabaseHelper(this@MainActivity)
+
+                // Open a writable database
+
+                // Open a writable database
+                val db = dbHelper.writableDatabase
+
+                // Insert the user's name and score into the database
+                val values = ContentValues()
+                values.put("name", profileName)
+                values.put("score", correctAnswers)
+                db.insert("scores", null, values)
+
+                // Close the database
+                db.close()
+
+                //Hae highest score
+                val highestScore = //if (profileName != null) {
+                    getHighestScoreForUser(dbHelper)
+               // } else {
+                    // handle the case where profileName is null
+                //    correctAnswers
+                //}
+
                 //below not necessary anymore -> finishscreen
                 timerTextView.text = "Time's up!"
 
                 //send to finishscreen with score var
                 intent.putExtra("score", correctAnswers)
+                intent.putExtra("highestScore", highestScore)
+                //intent.putExtra("highestScore", highestScore)
                 startActivity(intent)
             }
 
         }
+
 
 
         countDownTimer.start()

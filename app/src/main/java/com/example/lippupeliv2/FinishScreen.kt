@@ -14,8 +14,11 @@ class FinishScreen : AppCompatActivity() {
         setContentView(R.layout.activity_finish_screen)
 
         //Get score from MainActivity tab when OnFinish func. is called
+        val highestScore = intent.getIntExtra("highestScore", 0)
         val score = intent.getIntExtra("score", 0)
-
+        // set the text of the highest score text view
+        val highestScoreTextView = findViewById<TextView>(R.id.highest_score_text_view)
+        highestScoreTextView.text = "Highest Score: $highestScore"
         val tView = findViewById<TextView>(R.id.textView)
         val btnTry = findViewById<Button>(R.id.btn_try)
 
